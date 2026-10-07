@@ -44,7 +44,8 @@ export async function GET(request: NextRequest) {
 
   return new Promise<NextResponse>((resolve) => {
     // Use the bundled yt-dlp binary
-    const binPath = path.join(process.cwd(), 'bin', 'yt-dlp.exe');
+    const binName = process.platform === 'win32' ? 'yt-dlp.exe' : 'yt-dlp_linux';
+    const binPath = path.join(process.cwd(), 'bin', binName);
     
     // Pass --force-ipv4 to bypass YouTube bot block on datacenter IPv6
     // Pass --js-runtimes to satisfy JavaScript requirement for extraction

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { spawn } from 'child_process';
 import path from 'path';
 import fs from 'fs';
+import ffmpegStatic from 'ffmpeg-static';
 
 
 export async function GET(request: NextRequest) {
@@ -15,10 +16,11 @@ export async function GET(request: NextRequest) {
 
   if (!url) return NextResponse.json({ error: 'Missing URL' }, { status: 400 });
 
-  const binPath = path.join(process.cwd(), 'bin', 'yt-dlp.exe');
+  const ytDlpName = process.platform === 'win32' ? 'yt-dlp.exe' : 'yt-dlp_linux';
+  const binPath = path.join(process.cwd(), 'bin', ytDlpName);
   
-  // Correctly get ffmpeg path using the imported module (ESLint compliant)
-  const ffmpegPath = path.join(process.cwd(), 'node_modules', 'ffmpeg-static', 'ffmpeg.exe');
+  // Get ffmpeg path using the imported module so Vercel traces it
+  const ffmpegPath = ffmpegStatic || path.join(process.cwd(), 'node_modules', 'ffmpeg-static', process.platform === 'win32' ? 'ffmpeg.exe' : 'ffmpeg');
 
   // Unique filename for disk-first processing
   const uniqueId = Math.random().toString(36).substring(7);
