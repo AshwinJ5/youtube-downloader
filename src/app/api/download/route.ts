@@ -62,7 +62,7 @@ export async function GET(request: NextRequest) {
         '--no-cache-dir',
         '--force-ipv4',
         '--no-playlist', 
-        '--extractor-args', 'youtube:player_client=default',
+        '--extractor-args', 'youtube:player_client=ios,android,web',
         '--js-runtimes', `node:${process.execPath}`,
         '-f', format,
         '--merge-output-format', type === 'audio' ? 'mp3' : 'mp4',
