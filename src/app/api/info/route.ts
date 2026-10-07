@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     console.error("Avatar scrape failed:", err);
   }
 
-  return new Promise((resolve) => {
+  return new Promise<NextResponse>((resolve) => {
     // Use the bundled yt-dlp binary
     const binPath = path.join(process.cwd(), 'bin', 'yt-dlp.exe');
     
