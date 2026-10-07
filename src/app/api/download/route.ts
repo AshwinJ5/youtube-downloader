@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { spawn } from 'child_process';
 import path from 'path';
 import fs from 'fs';
+import os from 'os';
 import ffmpegStatic from 'ffmpeg-static';
 
 
@@ -25,11 +26,11 @@ export async function GET(request: NextRequest) {
   // Unique filename for disk-first processing
   const uniqueId = Math.random().toString(36).substring(7);
   const ext = type === 'audio' ? 'mp3' : 'mp4';
-  const outPath = path.join(process.cwd(), 'temp', `${title}_${uniqueId}.${ext}`);
+  const tempDir = process.env.VERCEL ? os.tmpdir() : path.join(process.cwd(), 'temp');
+  const outPath = path.join(tempDir, `${title}_${uniqueId}.${ext}`);
 
   try {
     // Ensure temp dir exists and run Garbage Collection for old files
-    const tempDir = path.join(process.cwd(), 'temp');
     if (!fs.existsSync(tempDir)) {
       fs.mkdirSync(tempDir);
     } else {
@@ -58,6 +59,7 @@ export async function GET(request: NextRequest) {
       }
 
       const args = [
+        '--no-cache-dir',
         '--force-ipv4',
         '--no-playlist', 
         '--extractor-args', 'youtube:player_client=default',

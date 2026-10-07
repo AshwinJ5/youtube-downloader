@@ -51,6 +51,7 @@ export async function GET(request: NextRequest) {
     // Pass --js-runtimes to satisfy JavaScript requirement for extraction
     const child = spawn(binPath, [
       '-j', 
+      '--no-cache-dir',
       '--force-ipv4',
       '--no-playlist', 
       '--extractor-args', 'youtube:player_client=default',
@@ -58,12 +59,15 @@ export async function GET(request: NextRequest) {
       url
     ]);
     let data = '';
+    let errorData = '';
 
     child.stdout.on('data', (chunk) => data += chunk.toString());
+    child.stderr.on('data', (chunk) => errorData += chunk.toString());
 
     child.on('close', (code) => {
       if (code !== 0) {
-        return resolve(NextResponse.json({ error: 'Failed to fetch video info' }, { status: 500 }));
+        console.error('yt-dlp error:', errorData);
+        return resolve(NextResponse.json({ error: 'Failed to fetch video info', details: errorData }, { status: 500 }));
       }
       try {
         const info = JSON.parse(data);
